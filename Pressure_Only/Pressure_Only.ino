@@ -1,25 +1,13 @@
 /***************************************************************************
   This is a library for the BMP3XX temperature & pressure sensor
 
-  Designed specifically to work with the Adafruit BMP388 Breakout
-  ----> http://www.adafruit.com/products/3966
-
-  These sensors use I2C or SPI to communicate, 2 or 4 pins are required
-  to interface.
-
-  Adafruit invests time and resources providing this open source code,
-  please support Adafruit and open-source hardware by purchasing products
-  from Adafruit!
-
-  Written by Limor Fried & Kevin Townsend for Adafruit Industries.
-  BSD license, all text above must be included in any redistribution
- ***************************************************************************/
+  The sensors use I2C.
+***************************************************************************/
 
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include "Adafruit_BMP3XX.h"
 #include <LiquidCrystal_I2C.h>
-#include "RTClib.h"
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
@@ -36,14 +24,9 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 unsigned long delayTime;
 float historicPressure1 = 0.0f;
 float historicPressure2 = 0.0f;
-DateTime historicTime;
+unsigned long historicTime;
 
 Adafruit_BMP3XX bmp;
-
-RTC_DS3231 rtc;
-
-char daysOfTheWeek[7][5] = {"Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"};
-char monthsOfTheYear[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 void setup() 
 {
@@ -76,7 +59,7 @@ void setup()
     lcd.backlight();
 
     analogWrite(BRIGHTNESS_PIN, 100);
-    
+
     // Write the parts that don't change
     lcd.setCursor(0, 0);
     lcd.print(F("Pressure "));
@@ -85,58 +68,37 @@ void setup()
     lcd.print(F("Rate "));
 
     historicPressure1 = historicPressure2 = (bmp.readPressure()/ 100.0F) + ADJUSTMENT;
-    DateTime now = rtc.now();
-    historicTime = DateTime(now.year(), now.month(), now.day(), now.hour(), 0, 0);   
+    historicTime = 0;   
 }
 
 void loop() 
 {
-    DateTime now = rtc.now();
-    printTime(now);
+    unsigned long now = millis();
     printPressure(now);
     delay(delayTime);
 }
 
-void printTime(DateTime now)
-{
-    // Display Time
-    lcd.setCursor(0, 3);
-
-    // Day & Month
-    lcd.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    lcd.print(F(" "));
-    printPaddedNumber(now.day());
-    lcd.print(F(" "));
-    lcd.print(monthsOfTheYear[now.month() - 1]);
-
-    // Hours, minutes & Seconds
-    lcd.print(F(" "));
-    printPaddedNumber(now.hour());
-    lcd.print(F(":"));
-    printPaddedNumber(now.minute());
-    lcd.print(F(":"));
-    printPaddedNumber(now.second());
-}
 
 int minuteOfLastUpdate = -1;
 
-void printPressure(DateTime now) 
+void printPressure(unsigned long now) 
 {
     // Only update if the minute has changed
-    if(now.minute() == minuteOfLastUpdate)
+    unsigned long minuteNow = now / 60000;
+    if(minuteNow == minuteOfLastUpdate)
     {
         return;
     }
-    minuteOfLastUpdate = now.minute();
+    minuteOfLastUpdate = minuteNow;
         
     // Calculate pressure
     float adjustedValue = (bmp.readPressure()/ 100.0F) + ADJUSTMENT;
 
     // Calculate historic pressure
-    DateTime nextUpdate = historicTime + TimeSpan(0, 1, 0, 0);
+    unsigned long nextUpdate = historicTime + 3600000;
     if(nextUpdate <= now)
     {
-         historicTime = DateTime(now.year(), now.month(), now.day(), now.hour(), 0, 0);
+         historicTime = nextUpdate;
          historicPressure2 = historicPressure1;
          historicPressure1 = adjustedValue;
     }
@@ -199,15 +161,7 @@ void printPressure(DateTime now)
         lcd.print(F("Steady         "));
     }
 
-    //Serial.print("Approx. Altitude = ");
-    //Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
-    //Serial.println(" m");
-
-    //Serial.print("Humidity = ");
-    //Serial.print(bme.readHumidity());
-    //Serial.println(" %");
-
-    //Serial.println();
+    
 }
 
 void printPaddedNumber(int number)
