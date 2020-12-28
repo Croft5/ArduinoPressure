@@ -75,7 +75,7 @@ void setup()
     // Turn on the blacklight
     lcd.backlight();
 
-    analogWrite(BRIGHTNESS_PIN, 100);
+    analogWrite(BRIGHTNESS_PIN, 80);
 
     // This section allows you to input a future time and pasue the program until reached
     
