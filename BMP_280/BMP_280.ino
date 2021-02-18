@@ -12,7 +12,7 @@
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 // This is used to adjust reading to sealevel
-#define ADJUSTMENT (8.30f)
+#define ADJUSTMENT (7.80f)
 
 // This adjusts the backlight brightness
 #define BRIGHTNESS_PIN 6
