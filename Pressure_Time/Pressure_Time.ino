@@ -88,7 +88,7 @@ void setup()
 
         while (val== LOW){
         DateTime now = rtc.now();
-        rtc.adjust(DateTime(2021, 03, 22, 15, 57, 00)); // Year, Month, Date, Hour, Min, Sec
+        rtc.adjust(DateTime(2020, 12, 28, 11, 27, 00)); // Year, Month, Date, Hour, Min, Sec
         lcd.setCursor(0, 1);
         lcd.print(F("Release button at"));
         printTime(now);
