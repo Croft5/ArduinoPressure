@@ -70,7 +70,7 @@ void setup()
     }
 
     // initialize the LCD
-    lcd.begin();
+    lcd.begin(20, 4);
 
     // Turn on the blacklight
     lcd.backlight();
@@ -88,7 +88,7 @@ void setup()
 
         while (val== LOW){
         DateTime now = rtc.now();
-        rtc.adjust(DateTime(2020, 12, 28, 11, 27, 00)); // Year, Month, Date, Hour, Min, Sec
+        rtc.adjust(DateTime(2021, 04, 04, 16, 33, 00)); // Year, Month, Date, Hour, Min, Sec
         lcd.setCursor(0, 1);
         lcd.print(F("Release button at"));
         printTime(now);
