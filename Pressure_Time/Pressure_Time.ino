@@ -88,7 +88,7 @@ void setup()
 
         while (val== LOW){
         DateTime now = rtc.now();
-        rtc.adjust(DateTime(2021, 04, 04, 16, 33, 00)); // Year, Month, Date, Hour, Min, Sec
+        rtc.adjust(DateTime(2021, 04, 07, 12, 28, 00)); // Year, Month, Date, Hour, Min, Sec
         lcd.setCursor(0, 1);
         lcd.print(F("Release button at"));
         printTime(now);
@@ -97,6 +97,7 @@ void setup()
      
     
     // Write the parts that don't change
+    lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print(F("Pressure "));
  
